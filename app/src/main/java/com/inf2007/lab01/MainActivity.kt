@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -22,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.inf2007.lab01.ui.theme.Lab01Theme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +39,7 @@ fun MainScreen() {
     Lab01Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             var username by remember { mutableStateOf("") }
-            var showGreeting by remember { mutableStateOf(false) }
+            var greetingMessage by remember { mutableStateOf("") }
 
             Column(
                 modifier = Modifier
@@ -49,14 +49,16 @@ fun MainScreen() {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 UserInput(
-                    name = name,
-                    onNameChange = { name = it }
+                    name = username,
+                    onNameChange = { username = it }
                 )
 
                 Button(
                     onClick = {
-                        if (username.isNotBlank()) {
-                            showGreeting = false
+                        greetingMessage = if (username.isNotBlank()) {
+                            "Hello $username!, Welcome to INF2007!"
+                        } else {
+                            "" // Clear the greeting message if username is blank
                         }
                     },
                     modifier = Modifier
@@ -66,14 +68,13 @@ fun MainScreen() {
                     Text("Submit")
                 }
 
-                if (showGreeting) {
-                    Greeeting(
-                        name = username,
+                if (greetingMessage.isNotBlank()) {
+                    Greeting(
+                        message = greetingMessage,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 16.dp)
                     )
-
                 }
             }
         }
@@ -88,17 +89,25 @@ fun UserInput(name: String, onNameChange: (String) -> Unit, modifier: Modifier =
         label = { Text("Enter your Name") },
         modifier = modifier
             .fillMaxWidth()
-            .testTag("UserInput")
+            .testTag("nameInput")
     )
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting(message: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Hello $username!, Welcome to InF2007!",
-        modifier = Modifier
+        text = message,
+        modifier = modifier
             .fillMaxWidth()
-            .testTag("greeting")
+            .testTag("greetingMsg")
+    )
+}
+
+@Composable
+fun Lab01Theme(content: @Composable () -> Unit) {
+    MaterialTheme(
+        // Optional: You can define your color scheme, typography, and shapes here
+        content = content
     )
 }
 
